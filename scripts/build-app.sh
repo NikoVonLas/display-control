@@ -31,6 +31,7 @@ fi
 /usr/bin/install -m 0755 "$bin_path/acerctl" "$contents_path/Resources/bin/acerctl"
 /usr/bin/install -m 0755 "$bin_path/acerctl" "${project_dir}/dist/acerctl"
 /usr/bin/install -m 0644 "${project_dir}/Packaging/Info.plist" "$contents_path/Info.plist"
+/usr/bin/install -m 0644 "${project_dir}/Packaging/AcerDisplayControl.icns" "$contents_path/Resources/AcerDisplayControl.icns"
 /usr/bin/install -m 0644 "${project_dir}/ThirdParty/m1ddc-LICENSE.txt" "$contents_path/Resources/m1ddc-LICENSE.txt"
 
 /usr/bin/ditto --norsrc --noextattr "$sparkle_dir/Sparkle.framework" "$contents_path/Frameworks/Sparkle.framework"
