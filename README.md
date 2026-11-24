@@ -23,7 +23,7 @@
 
 ## Установка и обновления
 
-Скачайте DMG для Apple Silicon из [последнего релиза](https://github.com/NikoVonLas/acer-display-control/releases/latest), перенесите приложение в «Программы» и запустите. Публичная сборка имеет подпись ad hoc и не проходит нотариализацию Apple.
+Скачайте DMG для Apple Silicon из [последнего релиза](https://github.com/NikoVonLas/display-control/releases/latest), перенесите приложение в «Программы» и запустите. Публичная сборка имеет подпись ad hoc и не проходит нотариализацию Apple.
 
 В «Настройки» → «Обновления» можно включить автоматическую проверку и установку, посмотреть текущую версию или проверить обновления вручную. При включённой автопроверке Sparkle обращается к GitHub примерно раз в час. Лента и образ приложения проверяются по открытому ключу проекта. Прошивка монитора обновляется отдельно.
 
@@ -32,8 +32,8 @@ DDC-команды выполняются локально. Для чтения 
 ## Сборка приложения
 
 ```bash
-git clone https://github.com/NikoVonLas/acer-display-control.git
-cd acer-display-control
+git clone https://github.com/NikoVonLas/display-control.git
+cd display-control
 ./scripts/build-app.sh
 ```
 

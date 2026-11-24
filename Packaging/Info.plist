@@ -23,7 +23,7 @@
     <key>CFBundleVersion</key>
 	<string>39</string>
     <key>SUFeedURL</key>
-    <string>https://github.com/NikoVonLas/acer-display-control/releases/latest/download/appcast.xml</string>
+    <string>https://github.com/NikoVonLas/display-control/releases/latest/download/appcast.xml</string>
     <key>SUPublicEDKey</key>
     <string>CHwT/v62F+PW6oI338oiiyuNb8rCVxd853+xpf9/mC0=</string>
     <key>SURequireSignedFeed</key>
