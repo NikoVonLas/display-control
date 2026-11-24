@@ -30,7 +30,11 @@ final class DisplayStore: ObservableObject {
     private let defaults: UserDefaults
     private let lastHubRouteKey = "lastHubRoute"
     private let disconnectDisplayForPCKey = "disconnectDisplayForPC"
-    private var isRefreshing = false
+    private(set) var isRefreshing = false
+    // resolveTarget follows one physical monitor across WindowServer ID changes.
+    // App-scoped display configuration is released when this process exits.
+    private var detachedForPC = false
+    private var lastDesktopRequest: (id: UInt32, enabled: Bool)?
     private var revision = 0
     private var monitorTask: Task<Void, Never>?
     private var brightnessTask: Task<Void, Never>?
@@ -500,7 +504,7 @@ final class DisplayStore: ObservableObject {
                     if macActive, syncSettled, !automatic, previousInput == input, !reconnect,
                        peerChanged, lastPeer?.primary == state.3, let peerValue = state.5 {
                         setBrightness(peerValue)
-                    } else if (automatic || settling), let desired,
+                    } else if (input != .usbC || macActive), (automatic || settling), let desired,
                               state.3.map({ abs($0 - max(0, desired)) > 0.5 }) ?? true {
                         restoreBrightness(desired, input: input, target: state.0)
                     }
@@ -556,12 +560,17 @@ final class DisplayStore: ObservableObject {
                     syncSettled = false
                 }
                 isDisplayDisconnected = !controller.isDisplayActive(displayID: state.0.id)
-                // Input switches can briefly remove the display, then reconnect it.
-                // Reconcile the actual topology even while the menu is closed.
                 if let input = currentInput {
                     let shouldDisconnect = disconnectDisplayForPC && input != .usbC
-                    if isDisplayDisconnected != shouldDisconnect {
-                        reconcileDisplay(enabled: !shouldDisconnect)
+                    if isDisplayDisconnected == shouldDisconnect {
+                        lastDesktopRequest = nil
+                        if !isDisplayDisconnected { detachedForPC = false }
+                    } else if !isBusy, shouldDisconnect || detachedForPC {
+                        let enabled = !shouldDisconnect
+                        if reportErrors || lastDesktopRequest?.id != state.0.id || lastDesktopRequest?.enabled != enabled {
+                            lastDesktopRequest = (state.0.id, enabled)
+                            reconcileDisplay(enabled: enabled)
+                        }
                     }
                 }
             } catch {
@@ -624,13 +633,16 @@ final class DisplayStore: ObservableObject {
         disconnectDisplayForPC = enabled
         defaults.set(enabled, forKey: disconnectDisplayForPCKey)
 
+        lastDesktopRequest = nil
         if let currentInput {
-            reconcileDisplay(enabled: !enabled || currentInput == .usbC)
+            let shouldDisconnect = enabled && currentInput != .usbC
+            if shouldDisconnect || detachedForPC { reconcileDisplay(enabled: !shouldDisconnect) }
         }
     }
 
     private func applyProfile(input: VideoInput, hubRoute: HubRoute?) {
         guard !isBusy else { return }
+        lastDesktopRequest = nil
         let pendingBrightness = isAdjustingBrightness ? brightnessPercent : nil
         if input != .usbC, currentInput == .usbC { tint.apply(ids: [], level: 0) }
         brightnessTask?.cancel()
@@ -713,11 +725,9 @@ final class DisplayStore: ObservableObject {
                         showBrightnessRestoreError(error, input: input)
                     }
                 }
-                display = try await Task.detached(priority: .userInitiated) {
-                    let current = try resolveTarget(controller, knownDisplay: target)
-                    try controller.setDisplayEnabled(!shouldDisconnectDisplay, displayID: current.id)
-                    return current
-                }.value
+                if input == .usbC || shouldDisconnectDisplay || detachedForPC {
+                    display = try await configureDesktop(enabled: !shouldDisconnectDisplay, target: target)
+                }
             } catch {
                 show(error)
             }
@@ -750,6 +760,19 @@ final class DisplayStore: ObservableObject {
         }
     }
 
+    private func configureDesktop(enabled: Bool, target: ExternalDisplay) async throws -> ExternalDisplay {
+        let controller = self.controller
+        let (current, wasActive) = try await Task.detached(priority: .userInitiated) {
+            let current = try resolveTarget(controller, knownDisplay: target)
+            let wasActive = controller.isDisplayActive(displayID: current.id)
+            try controller.setDisplayEnabled(enabled, displayID: current.id)
+            return (current, wasActive)
+        }.value
+        if enabled { detachedForPC = false }
+        else if wasActive { detachedForPC = true }
+        return current
+    }
+
     private func reconcileDisplay(enabled: Bool) {
         guard !isBusy, let display else { return }
         revision += 1
@@ -759,11 +782,7 @@ final class DisplayStore: ObservableObject {
         let controller = self.controller
         Task {
             do {
-                let target = try await Task.detached(priority: .userInitiated) {
-                    let target = try resolveTarget(controller, knownDisplay: display)
-                    try controller.setDisplayEnabled(enabled, displayID: target.id)
-                    return target
-                }.value
+                let target = try await configureDesktop(enabled: enabled, target: display)
                 self.display = target
                 isDisplayDisconnected = !controller.isDisplayActive(displayID: target.id)
             } catch {

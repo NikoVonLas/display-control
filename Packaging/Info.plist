@@ -19,9 +19,9 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-	<string>0.5.3</string>
+	<string>0.5.4</string>
     <key>CFBundleVersion</key>
-	<string>39</string>
+	<string>40</string>
     <key>SUFeedURL</key>
     <string>https://github.com/NikoVonLas/display-control/releases/latest/download/appcast.xml</string>
     <key>SUPublicEDKey</key>

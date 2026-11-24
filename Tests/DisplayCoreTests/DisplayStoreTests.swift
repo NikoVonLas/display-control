@@ -161,6 +161,55 @@ final class DisplayStoreTests: XCTestCase {
         XCTAssertThrowsError(try controller.setBrightness(percent: 80, displayUUID: "acer-test"))
     }
 
+    @MainActor func testPollingLeavesExternallyInactiveMacDisplayAlone() async throws {
+        let controller = MockDisplayController()
+        let store = makeStore(controller)
+        for active in [true, false, false, true, false] {
+            controller.active = active
+            store.refresh(reportErrors: false)
+            try await waitUntil { !store.isRefreshing && !store.isBusy }
+            XCTAssertEqual(store.isDisplayDisconnected, !active)
+        }
+        XCTAssertTrue(controller.calls.isEmpty)
+        store.applyMacProfile()
+        try await waitUntil { !store.isBusy }
+        XCTAssertTrue(controller.active)
+    }
+
+    @MainActor func testExternalSwitchToMacRestoresOnlyOurDisconnect() async throws {
+        for initiallyActive in [true, false] {
+            let controller = MockDisplayController()
+            controller.active = initiallyActive
+            let store = makeStore(controller)
+            store.applyPCProfile()
+            try await waitUntil { !store.isBusy }
+            controller.input = VideoInput.usbC.rawValue
+            store.refresh(reportErrors: false)
+            try await waitUntil { !store.isRefreshing && !store.isBusy }
+            XCTAssertEqual(controller.active, initiallyActive)
+            controller.active = false // Screen sharing takes over the desktop.
+            store.refresh(reportErrors: false)
+            try await waitUntil { !store.isRefreshing && !store.isBusy }
+            XCTAssertFalse(controller.active)
+        }
+    }
+
+    @MainActor func testFailedBackgroundDisconnectWaitsForNewStateOrManualRetry() async throws {
+        let controller = MockDisplayController()
+        controller.input = VideoInput.displayPort.rawValue
+        controller.failDisconnect = true
+        let store = makeStore(controller)
+        for _ in 0..<3 {
+            store.refresh(reportErrors: false)
+            try await waitUntil { !store.isRefreshing && !store.isBusy }
+        }
+        XCTAssertEqual(controller.calls.filter { $0 == "enabled:42:false" }.count, 1)
+        controller.failDisconnect = false
+        store.refresh()
+        try await waitUntil { !store.isRefreshing && !store.isBusy }
+        XCTAssertTrue(store.isDisplayDisconnected)
+    }
+
     @MainActor func testPCProfileDisconnectAndMacRestoreOrder() async throws {
         let controller = MockDisplayController()
         let store = makeStore(controller)
