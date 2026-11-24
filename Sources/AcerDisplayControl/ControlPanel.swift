@@ -143,7 +143,15 @@ struct ControlPanel: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .frame(width: 66, alignment: .leading)
-            control().labelsHidden().frame(maxWidth: .infinity)
+            Group {
+                if #available(macOS 26, *) {
+                    control().buttonSizing(.flexible)
+                } else {
+                    control()
+                }
+            }
+            .labelsHidden()
+            .frame(maxWidth: .infinity)
         }
     }
 }

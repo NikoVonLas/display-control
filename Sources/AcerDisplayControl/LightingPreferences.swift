@@ -13,10 +13,16 @@ struct LightingPreferences: View {
                 Toggle(isOn: $store.lighting.useSensor) {
                     Text("Учитывать освещённость").frame(maxWidth: .infinity, alignment: .leading)
                 }.toggleStyle(.switch)
-                Picker("Расписание яркости", selection: $store.lighting.schedule) {
-                    Text("Выкл.").tag(Lighting.Schedule.off)
-                    Text("По часам").tag(Lighting.Schedule.clock)
-                    Text("По солнцу").tag(Lighting.Schedule.sun)
+                HStack {
+                    Text("Расписание яркости")
+                    Spacer()
+                    Picker("Расписание яркости", selection: $store.lighting.schedule) {
+                        Text("Выкл.").tag(Lighting.Schedule.off)
+                        Text("По часам").tag(Lighting.Schedule.clock)
+                        Text("По солнцу").tag(Lighting.Schedule.sun)
+                    }
+                    .labelsHidden()
+                    .fixedSize()
                 }
                 if store.lighting.schedule == .sun {
                     HStack {
