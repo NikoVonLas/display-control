@@ -19,7 +19,7 @@ struct ControlPanel: View {
                 Image(systemName: "display").font(.system(size: 23, weight: .medium))
                     .foregroundStyle(.secondary)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(store.display?.productName ?? "Acer Display Control")
+                    Text(store.display?.productName ?? "Display Control")
                         .font(.system(size: 15, weight: .semibold))
                     Text(connection).font(.caption).foregroundStyle(.secondary)
                 }

@@ -94,7 +94,7 @@ private func run() throws {
             return
         }
         if command == "lighting" {
-            throw NSError(domain: "acerctl", code: 1, userInfo: [NSLocalizedDescriptionKey: "Запустите Acer Display Control с поддержкой автоматизации"])
+            throw NSError(domain: "acerctl", code: 1, userInfo: [NSLocalizedDescriptionKey: "Запустите Display Control с поддержкой автоматизации"])
         }
     }
     switch command {

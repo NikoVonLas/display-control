@@ -5,7 +5,7 @@ set -euo pipefail
 readonly script_dir="${0:A:h}"
 readonly project_dir="${script_dir:h}"
 readonly build_root="${ACER_BUILD_ROOT:-${project_dir}/.build-release}"
-readonly app_path="${project_dir}/dist/Acer Display Control.app"
+readonly app_path="${project_dir}/dist/Display Control.app"
 readonly contents_path="${app_path}/Contents"
 
 cd "$project_dir"
@@ -27,7 +27,7 @@ if [[ -d "$app_path" ]]; then
 fi
 
 /bin/mkdir -p "$contents_path/MacOS" "$contents_path/Frameworks" "$contents_path/Resources/bin" "${project_dir}/dist"
-/usr/bin/install -m 0755 "$bin_path/AcerDisplayControl" "$contents_path/MacOS/AcerDisplayControl"
+/usr/bin/install -m 0755 "$bin_path/AcerDisplayControl" "$contents_path/MacOS/DisplayControl"
 /usr/bin/install -m 0755 "$bin_path/acerctl" "$contents_path/Resources/bin/acerctl"
 /usr/bin/install -m 0755 "$bin_path/acerctl" "${project_dir}/dist/acerctl"
 /usr/bin/install -m 0644 "${project_dir}/Packaging/Info.plist" "$contents_path/Info.plist"
@@ -36,7 +36,7 @@ fi
 
 /usr/bin/ditto --norsrc --noextattr "$sparkle_dir/Sparkle.framework" "$contents_path/Frameworks/Sparkle.framework"
 /usr/bin/install -m 0644 "$sparkle_dir/LICENSE" "$contents_path/Resources/Sparkle-LICENSE.txt"
-/usr/bin/strip -S "$contents_path/MacOS/AcerDisplayControl" "$contents_path/Resources/bin/acerctl"
+/usr/bin/strip -S "$contents_path/MacOS/DisplayControl" "$contents_path/Resources/bin/acerctl"
 
 # Accessibility grants are tied to the code signing requirement of the app.
 # Prefer a unique local Apple Development identity for repeatable local builds.

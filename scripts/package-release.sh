@@ -14,12 +14,12 @@ ACER_SIGN_IDENTITY=- ./scripts/build-app.sh
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 mkdir -p "$work/image" "$work/feed"
-ditto --norsrc --noextattr 'dist/Acer Display Control.app' "$work/image/Acer Display Control.app"
+ditto --norsrc --noextattr 'dist/Display Control.app' "$work/image/Display Control.app"
 ln -s /Applications "$work/image/Applications"
-name="Acer-Display-Control-$version.dmg"
+name="Display-Control-$version.dmg"
 dmg="$work/feed/$name"
 feed="$work/feed/appcast.xml"
-hdiutil create -fs HFS+ -volname 'Acer Display Control' -srcfolder "$work/image" -format UDZO "$dmg"
+hdiutil create -fs HFS+ -volname 'Display Control' -srcfolder "$work/image" -format UDZO "$dmg"
 hdiutil verify "$dmg"
 prefix="${feed_url%/latest/download/appcast.xml}/download/v$version/"
 "$tools/bin/generate_appcast" --account "$account" --maximum-deltas 0 --download-url-prefix "$prefix" "$work/feed"

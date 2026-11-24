@@ -94,11 +94,11 @@ final class StatusMenuController: NSObject {
             guard let button = self?.item.button else { return }
             if display != nil, let input {
                 button.image = input == .usbC ? MenuBarIcon.mac : MenuBarIcon.pc
-                button.setAccessibilityLabel(input == .usbC ? "Acer Display Control · Mac" : "Acer Display Control · второй компьютер")
+                button.setAccessibilityLabel(input == .usbC ? "Display Control · Mac" : "Display Control · второй компьютер")
             } else {
                 button.image = NSImage(systemSymbolName: display == nil ? "display.trianglebadge.exclamationmark" : "display.2",
-                                       accessibilityDescription: "Acer Display Control")
-                button.setAccessibilityLabel("Acer Display Control")
+                                       accessibilityDescription: "Display Control")
+                button.setAccessibilityLabel("Display Control")
             }
         }
         panel.isOpaque = false

@@ -59,11 +59,11 @@ enum HomeAssistantLight {
 
     static func saveToken(_ token: String, for url: URL) throws {
         let query = key(for: url)
-        let values = [kSecValueData as String: Data(token.utf8)]
+        let values: [String: Any] = [kSecValueData as String: Data(token.utf8),
+                                     kSecAttrLabel as String: "Display Control · Home Assistant"]
         var result = SecItemUpdate(query as CFDictionary, values as CFDictionary)
         if result == errSecItemNotFound {
-            var entry = query.merging(values) { _, new in new }
-            entry[kSecAttrLabel as String] = "Acer Display Control · Home Assistant"
+            let entry = query.merging(values) { _, new in new }
             result = SecItemAdd(entry as CFDictionary, nil)
         }
         guard result == errSecSuccess else { throw LightSensorError("Не удалось сохранить токен в Связке ключей") }

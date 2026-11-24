@@ -1,4 +1,4 @@
-# Acer Display Control
+# Display Control
 
 Мини-утилита для macOS, управляющая Acer Nitro XV282K KV через DDC/CI по USB-C / DisplayPort Alt Mode.
 
@@ -40,7 +40,7 @@ cd acer-display-control
 Результат появится здесь:
 
 ```text
-dist/Acer Display Control.app
+dist/Display Control.app
 dist/acerctl
 ```
 
@@ -166,7 +166,7 @@ macOS не поддерживает прямое управление, дост�
 В «Командах» выберите «Запустить shell-скрипт». Путь к CLI установленной копии:
 
 ```sh
-ctl='/Applications/Acer Display Control.app/Contents/Resources/bin/acerctl'
+ctl='/Applications/Display Control.app/Contents/Resources/bin/acerctl'
 "$ctl" lighting status             # JSON о состоянии
 "$ctl" lighting sync on            # синхронизировать два экрана
 "$ctl" lighting brightness 30 45   # вручную 30%, пауза автояркости Mac на 45 мин
@@ -187,7 +187,7 @@ ctl='/Applications/Acer Display Control.app/Contents/Resources/bin/acerctl'
 
 С версии 0.3.2 клавиши яркости управляют аппаратной подсветкой Acer через DDC
 без HDR, когда выбран Mac. Шаг — 6,25%, с Shift+Option — 1%. Для работы
-нужно разрешить Acer Display Control в «Универсальном доступе» macOS; кнопка
+нужно разрешить Display Control в «Универсальном доступе» macOS; кнопка
 «Запросить доступ…» и статус клавиш находятся в «Настройки» → «Расширенные». Кнопка вызывает системный запрос. Приложение проверяет разрешение при возврате в окно и каждые две секунды. Без разрешения
 ползунок приложения работает как раньше. На входе PC клавиши не перехватываются.
 
