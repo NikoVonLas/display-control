@@ -1,0 +1,16 @@
+.build*/
+dist/
+.swiftpm/
+*.xcuserstate
+.DS_Store
+.env
+.env.*
+*.pem
+*.p12
+*.pfx
+*.cer
+*.key
+*.mobileprovision
+firmware-research/rts-readmem
+firmware-research/rts-readmem.c
+firmware-research/build-rts-readmem.sh
